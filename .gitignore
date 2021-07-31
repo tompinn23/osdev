@@ -1,0 +1,7 @@
+kernel.elf
+image.iso
+*.o
+compile_commands.json
+iso_root/
+limine-install
+
