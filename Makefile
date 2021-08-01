@@ -2,18 +2,22 @@ KERNEL := kernel.elf
 
 CC = x86_64-elf-gcc
 LD = x86_64-elf-ld
+NASM = nasm
 
-CFLAGS = -Wall -Wextra -O2 -pipe
+PWD = $(shell pwd)
 
+CFLAGS = -g -Wall -Wextra -O2 -pipe
+NASMFLAGS = 
 LDFLAGS =
 
 # internal c flags that shouldn't be changed by the user.
 INTERNALCFLAGS :=        \
 	-I.                  \
+	-I$(PWD)/src         \
 	-std=gnu11           \
 	-ffreestanding       \
 	-fno-stack-protector \
-	-fno-pic -fpie       \
+	-fno-pic -fPIE       \
 	-mno-80387           \
 	-mno-mmx             \
 	-mno-3dnow           \
@@ -31,12 +35,16 @@ INTERNALLDFLAGS :=             \
 	--no-dynamic-linker    \
 	-ztext
 
-CFILES := src/kernel.c src/idt.c
-OBJS := $(CFILES:.c=.o)
+C_SRCS := $(wildcard src/*.c) $(wildcard src/klib/*.c) $(wildcard src/cpu/*.c) $(wildcard src/console/*.c) $(wildcard src/kernel/*.c)
+AS_SRCS := src/cpu/idt.s src/cpu/interrupt.s
+OBJS := $(C_SRCS:.c=.o) $(AS_SRCS:.s=.s.o)
 
-.PHONY: all clean
+.PHONY: all clean print
 
 all: $(KERNEL)
+
+print:
+	echo $(OBJS)
 
 $(KERNEL): $(OBJS)
 	$(LD) $(OBJS) $(LDFLAGS) $(INTERNALLDFLAGS) -o $@
@@ -44,6 +52,8 @@ $(KERNEL): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INTERNALCFLAGS) -c $< -o $@
 
+%.s.o: %.s
+	$(NASM) -f elf64 $(NASMFLAGS) $< -o $@ 
 
 iso: $(KERNEL)
 	rm -rf iso_root
@@ -59,6 +69,6 @@ iso: $(KERNEL)
 	
 	./limine/limine-install image.iso
 
-
 clean:
-	rm -rf $(KERNEL) $(OBJ)
+	rm -rf $(KERNEL) $(OBJS) iso_root image.iso
+

@@ -1,20 +1,38 @@
 #pragma once
 
-#include "int_types.h"
+#include "src/klib/int_types.h"
+
+struct gdt_ptr {
+    u16 limit;
+    u64 base;
+} __attribute__((packed));
+typedef struct gdt_ptr gdt_ptr_t;
+
+struct gdt_entry {
+    u16 limit_low;
+    u16 base_low;
+    u8 base_miidle;
+    u8 access;
+    u8 granularity;
+    u8 base_high;
+} __attribute__((packed));
+typedef struct gdt_entry gdt_entry_t;
 
 struct idt_entry {
     u16 base_lo;
     u16 sel;
-    u8 zero;
-    u8 flags;
-    u16 base_hi;
+    u8 ist;
+    u8 type_attr;
+    u16 base_mid;
+    u32 base_hi;
+    u32 zero;
 
 } __attribute__((packed));
 typedef struct idt_entry idt_entry_t;
 
 struct idt_ptr {
     u16 limit;
-    u32 base;
+    u64 base;
 } __attribute__((packed));
 typedef struct idt_ptr idt_ptr_t;
 
