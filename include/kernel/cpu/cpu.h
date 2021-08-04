@@ -1,6 +1,6 @@
 #pragma once
 
-#include "klib/int_types.h"
+#include "int_types.h"
 
 void cpu_detect();
 

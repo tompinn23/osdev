@@ -1,6 +1,6 @@
 #pragma once
 
-#include "src/klib/int_types.h"
+#include "int_types.h"
 
 struct gdt_ptr {
     u16 limit;

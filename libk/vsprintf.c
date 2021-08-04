@@ -1,6 +1,6 @@
 #include "printf.h"
 
-#include "../common.h"
+#include "common.h"
 #include "string.h"
 #include "serial.h"
 #include "console/console.h"

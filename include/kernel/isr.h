@@ -1,6 +1,6 @@
 #pragma once
 
-#include "klib/int_types.h"
+#include "int_types.h"
 
 typedef struct registers{
     u64 r15, r14, r13, r12, r11, r10, r9, r8, rbp, rcx, rbx;

@@ -1,11 +1,10 @@
-#include "console.h"
+#include "console/console.h"
 
 #include "stddef.h"
 
 #define SSFN_CONSOLEBITMAP_TRUECOLOR
-#include "ssfn.h"
+#include "console/ssfn.h"
 
-//#include "dina_fnt.c"
 
 extern void dina_sfn;
 

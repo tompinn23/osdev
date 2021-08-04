@@ -35,7 +35,7 @@ INTERNALLDFLAGS :=             \
 	--no-dynamic-linker    \
 	-ztext
 
-C_SRCS := $(wildcard src/*.c) $(wildcard src/klib/*.c) $(wildcard src/cpu/*.c) $(wildcard src/console/*.c) $(wildcard src/kernel/*.c)
+C_SRCS := $(wildcard src/*.c) $(wildcard src/klib/*.c) $(wildcard src/cpu/*.c) $(wildcard src/console/*.c) $(wildcard src/kernel/*.c) $(wildcard src/mm/*.c)
 AS_SRCS := src/cpu/idt.s src/cpu/interrupt.s
 OBJS := $(C_SRCS:.c=.o) $(AS_SRCS:.s=.s.o)
 

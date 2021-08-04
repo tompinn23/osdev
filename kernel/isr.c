@@ -1,6 +1,6 @@
 #include "isr.h"
-#include "klib/string.h"
-#include "klib/printf.h"
+#include "string.h"
+#include "printf.h"
 
 
 

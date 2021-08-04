@@ -1,6 +1,6 @@
-#include "idt.h"
+#include "cpu/idt.h"
 
-#include "klib/string.h"
+#include "string.h"
 #include "console/console.h"
 
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"

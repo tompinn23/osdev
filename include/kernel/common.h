@@ -1,6 +1,6 @@
 #pragma once
 
-#include "klib/int_types.h"
+#include "int_types.h"
 
 
 void outb(u16 port, u8 val);

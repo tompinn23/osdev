@@ -1,8 +1,7 @@
 #include "terminal.h"
 
-#include "src/klib/int_types.h"
-
-#include "src/klib/string.h"
+#include "int_types.h"
+#include "string.h"
 
 static struct terminal_fn {
     void (*term_write)(const char* str, size_t length);

@@ -4,4 +4,4 @@ image.iso
 compile_commands.json
 iso_root/
 limine-install
-
+build/
