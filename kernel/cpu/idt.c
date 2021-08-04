@@ -51,7 +51,7 @@ void init_gdt() {
     gdt_flush((u64)&gdt_ptr);
 //    __asm__ volatile("lgdt %0" :: "m"(gdt_ptr) : "memory");
 //    gdt_reload_selectors(0x08, 0x10);
-    printf("GDT initialized\n");
+    kprintf("GDT initialized\n");
 }
 
 void gdt_reload_selectors(uint16_t code, uint16_t data) {
@@ -109,6 +109,6 @@ void init_idt() {
     init_idt_desc(31, (u64)isr31, 0x08, 0x8E);
     
     __asm__ volatile("lidt %0" :: "m"(idt_ptr));
-    printf("IDT initialized\n");
+    kprintf("IDT initialized\n");
 }
 

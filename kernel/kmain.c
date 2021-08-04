@@ -2,6 +2,7 @@
 #include <stddef.h>
 
 #include "stivale2.h"
+#include "mm/memory.h"
 #include "console/console.h"
 #include "printf.h"
 #include "cpu/idt.h"
@@ -44,6 +45,9 @@ void* stivale2_get_tag(struct stivale2_struct* stivale2_struct, uint64_t id) {
     }
 }
 
+
+extern uint64_t kernel_end;
+
 void kmain(struct stivale2_struct* stivale2_struct) {
     struct stivale2_struct_tag_framebuffer* term_str_tag;
     term_str_tag = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
@@ -58,40 +62,44 @@ void kmain(struct stivale2_struct* stivale2_struct) {
 
     init_console(term_str_tag);
 
-    if((u64)stivale2_struct - 0xffff8)
+    pmm_init(mem_map);
+    
+    kprintf("Kernel End: %p\n", (void*)(kernel_end / 0x1000));
 
-
+    uint64_t avail_total = 0;
     for(u64 i = 0; i < mem_map->entries; i++) {
-        printf("Section %d, base: %p, length: %p, ", i, mem_map->memmap[i].base, mem_map->memmap[i].length);
+        kprintf("Section %d, base in pages: 0x%p, length: 0x%p, ", i, mem_map->memmap[i].base / 0x1000, mem_map->memmap[i].length);
         switch(mem_map->memmap[i].type) {
             case 1:
-                printf("usable\n");
+                kprintf("usable\n");
+                avail_total += mem_map->memmap[i].length;
                 break;
-                case 2:
-                    printf("reserved\n");
-                    break;
-                    case 3:
-                        printf("acpi_reclaimable\n");
-                        break;
-                        case 4:
-                            printf("acpi_nvs\n");
-                            break;
-                            case 5:
-                                printf("bad memory\n");
-                                break;
-                                case 0x1000:
-                                    printf("bootloader_reclaimable\n");
-                                    break;
-                                    case 0x1001:
-                                        printf("kernel/modules\n");
-                                        break;
-                                        case 0x1002:
-                                            printf("framebuffer\n");
-                                            break;
+            case 2:
+                kprintf("reserved\n");
+                break;
+            case 3:
+                kprintf("acpi_reclaimable\n");
+                break;
+            case 4:
+                kprintf("acpi_nvs\n");
+                break;
+            case 5:
+                kprintf("bad memory\n");
+                break;
+            case 0x1000:
+                kprintf("bootloader_reclaimable\n");
+                break;
+            case 0x1001:
+                kprintf("kernel/modules\n");
+                break;
+            case 0x1002:
+                kprintf("framebuffer\n");
+                break;
         }
     }
-
-    printf("Hello %s\n", "World!");
+    kprintf("usable mem: %d pages, %u bytes, %d mb\n", avail_total / 0x1000, avail_total / 1024, avail_total / 1024 / 1024);
+    
+    kprintf("Hello %s\n", "World!");
     init_descriptor_tables();
     init_interrupt_handlers();
     

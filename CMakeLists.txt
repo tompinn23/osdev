@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(yonside)
+project(yonside C)
 
 enable_language(ASM_NASM)
 set(CMAKE_ASM_NASM_OBJECT_FORMAT elf64)

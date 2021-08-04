@@ -7,4 +7,4 @@ void init_console(struct stivale2_struct_tag_framebuffer* fb_tag);
 
 void putchar(char c);
 
-void printf(const char* fmt, ...);
+void kprintf(const char* fmt, ...);

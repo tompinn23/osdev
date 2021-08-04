@@ -12,7 +12,7 @@ void isr_handler(registers_t regs) {
         isr_handlers[regs.type](regs);
         return;
     }
-    printf("unhandled interrupt: %d", regs.type);
+    kprintf("unhandled interrupt: %d", regs.type);
 }
 
 void set_isr_handler(s32 num, isr_handler_t func) {
@@ -35,30 +35,30 @@ void init_interrupt_handlers() {
 
 
 void isr_div_error(registers_t regs) {
-    printf("INT: DIV error\n");
+    kprintf("INT: DIV error\n");
 }
 
 void isr_debug_exception(registers_t regs) {
-    printf("INT: Debug exception\n");
+    kprintf("INT: Debug exception\n");
 }
 
 void isr_nmi_interrupt(registers_t regs) {
-    printf("INT: NMI interrupt\n");
+    kprintf("INT: NMI interrupt\n");
 }
 
 void isr_breakpoint(registers_t regs) {
-    printf("INT: Breakpoint\n");
+    kprintf("INT: Breakpoint\n");
 }
 
 
 void isr_double_fault(registers_t regs) {
-    printf("INT: Double Fault. Oh fuck!\n");
+    kprintf("INT: Double Fault. Oh fuck!\n");
 }
 
 void isr_general_protection(registers_t regs) {
-    printf("INT: General Protection fault");
+    kprintf("INT: General Protection fault");
 }
 
 void isr_page_fault(registers_t regs) {
-    printf("INT: page fault :(\n");
+    kprintf("INT: page fault :(\n");
 }

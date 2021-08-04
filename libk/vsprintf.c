@@ -147,7 +147,7 @@ void vsprintf_helper(char * str, void (*putchar)(char), const char * format, uin
  * printf is sprintf is very similar, except that sprintf doesn't print to screen
  * */
 
-void printf(const char * s, ...) {
+void kprintf(const char * s, ...) {
     va_list ap;
     va_start(ap, s);
     vsprintf(NULL, putchar, s, ap);

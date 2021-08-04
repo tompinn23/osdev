@@ -5,3 +5,5 @@ compile_commands.json
 iso_root/
 limine-install
 build/
+.idea/*
+.vs/*

@@ -56,4 +56,6 @@ SECTIONS
         *(COMMON)
         *(.bss*)
     } :data
+
+    kernel_end = .;
 }

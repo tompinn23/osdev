@@ -1,0 +1,9 @@
+[
+    {
+    "name": "x86_64-elf-gcc",
+    "compilers": {
+        "C": "/opt/cross/bin/x86_64-elf-gcc"
+    },
+    "toolchainFile":  "cmake/x86_64-elf-toolchain.cmake"
+    }
+]
