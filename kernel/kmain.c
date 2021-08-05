@@ -46,7 +46,7 @@ void* stivale2_get_tag(struct stivale2_struct* stivale2_struct, uint64_t id) {
 }
 
 
-extern uint64_t kernel_end;
+extern uint64_t _kernel_end_phys[];
 
 void kmain(struct stivale2_struct* stivale2_struct) {
     struct stivale2_struct_tag_framebuffer* term_str_tag;
@@ -62,9 +62,18 @@ void kmain(struct stivale2_struct* stivale2_struct) {
 
     init_console(term_str_tag);
 
+    int i = 0;
+    for(i = 0; i < mem_map->entries; i++)
+        if(mem_map->memmap[i].type == STIVALE2_MMAP_USABLE) {
+            break;
+        }
+
+
+    //bootmem_init(pg_data_t* page_data, uint64_t map_start, uint64_t start, uint64_t end);
+
     pmm_init(mem_map);
     
-    kprintf("Kernel End: %p\n", (void*)(kernel_end / 0x1000));
+    kprintf("Kernel End: 0x%p\n", _kernel_end_phys);
 
     uint64_t avail_total = 0;
     for(u64 i = 0; i < mem_map->entries; i++) {

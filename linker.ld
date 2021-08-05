@@ -5,6 +5,10 @@ OUTPUT_ARCH(i386:x86-64)
 /* We want the symbol _start to be our entry point */
 ENTRY(kmain)
  
+phys = 0x200000;
+offset = 0xffffffff80000000;
+virt = offset + phys;
+
 /* Define the program headers we want so the bootloader gives us the right */
 /* MMU permissions */
 PHDRS
@@ -21,7 +25,7 @@ SECTIONS
     /* We wanna be placed in the higher half, 2MiB above 0 in physical memory. */
     /* Since we are going to use PIE, this is just the base load address, but the */
     /* bootloader will be able to relocate us as it sees fit. */
-    . = 0xffffffff80200000;
+    . = virt;
  
     .text : {
         *(.text*)
@@ -57,5 +61,5 @@ SECTIONS
         *(.bss*)
     } :data
 
-    kernel_end = .;
+    _kernel_end_phys = . + 0x1000 - offset;
 }

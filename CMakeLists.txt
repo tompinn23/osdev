@@ -12,6 +12,7 @@ set(KERNEL_SRC
     kernel/common.c
     kernel/isr.c
 
+    kernel/mm/bootmem.c
     kernel/mm/phys_mem.c
     
     kernel/cpu/cpu.c
