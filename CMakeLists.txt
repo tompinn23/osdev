@@ -11,6 +11,7 @@ set(KERNEL_SRC
     kernel/serial.c
     kernel/common.c
     kernel/isr.c
+    kernel/util.c
 
     kernel/mm/bootmem.c
     kernel/mm/phys_mem.c
@@ -38,7 +39,11 @@ add_executable(kernel.elf ${KERNEL_SRC})
 target_link_libraries(kernel.elf libk)
 target_include_directories(kernel.elf PUBLIC include/kernel)
 
+target_compile_definitions(kernel.elf PUBLIC DEBUG_early_pmm)
+
 add_custom_target(iso ${CMAKE_SOURCE_DIR}/make_iso.sh ${CMAKE_BINARY_DIR}
                   DEPENDS kernel.elf
                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                   )
+
+                

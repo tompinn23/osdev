@@ -3,6 +3,7 @@
 
 #include "stivale2.h"
 #include "mm/memory.h"
+#include "mm/phys_mem.h"
 #include "console/console.h"
 #include "printf.h"
 #include "cpu/idt.h"
@@ -46,7 +47,6 @@ void* stivale2_get_tag(struct stivale2_struct* stivale2_struct, uint64_t id) {
 }
 
 
-extern uint64_t _kernel_end_phys[];
 
 void kmain(struct stivale2_struct* stivale2_struct) {
     struct stivale2_struct_tag_framebuffer* term_str_tag;
@@ -61,17 +61,10 @@ void kmain(struct stivale2_struct* stivale2_struct) {
     mem_map = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_MEMMAP_ID);
 
     init_console(term_str_tag);
+    bootmem_init(&page_data, mem_map);
+    kprintf("Page data: %d", page_data);
 
-    int i = 0;
-    for(i = 0; i < mem_map->entries; i++)
-        if(mem_map->memmap[i].type == STIVALE2_MMAP_USABLE) {
-            break;
-        }
-
-
-    //bootmem_init(pg_data_t* page_data, uint64_t map_start, uint64_t start, uint64_t end);
-
-    pmm_init(mem_map);
+    pmm_init(page_data);
     
     kprintf("Kernel End: 0x%p\n", _kernel_end_phys);
 

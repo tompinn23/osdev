@@ -5,6 +5,11 @@
 #include "util.h"
 
 
+struct page* const page_data = NULL;
+
+
+struct zone memory_zones[MAX_NR_ZONES];
+
 /*
     bitmaps need 1 bit for the total of the following equation.
     x + 1/2x + 1/4x + 1/8x + 1/16x + 1/32x + 1/64x + 1/128x + 1/256x + 1/512x
@@ -21,18 +26,14 @@ uint64_t get_available_pages(struct free_area area) {
 }
 
 
+/**
+ * Initialize the zoned buddy allocator
+ * 
+ * 
+ */
 
-
-void pmm_init(struct stivale2_struct_tag_memmap* memory_map) {
-    for(size_t idx = 0; idx < memory_map->entries; idx++) {
-        struct stivale2_mmap_entry entry = memory_map->memmap[idx];
-        if(entry.type == STIVALE2_MMAP_USABLE) {
-            struct free_area area;
-            area.phys_base = entry.base;
-            area.len = entry.length;
-            if(get_available_pages(area) > 0) { // usable memory area
-            
-            }
-        }
+void pmm_init(struct page* page_data, struct stivale2_struct_tag_memmap* mem_map) {
+    for(int i = 0; i < mem_map->entries; i++) {
+        if(mem_map->memmap[i].type == )
     }
 }

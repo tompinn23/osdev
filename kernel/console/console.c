@@ -23,3 +23,10 @@ void init_console(struct stivale2_struct_tag_framebuffer* fb_tag) {
 void putchar(char c) {
     ssfn_putc(c);
 }
+
+void puts(const char* str) {
+    while(*str != '\0') {
+        putchar(*str);
+        str++;
+    }
+}
