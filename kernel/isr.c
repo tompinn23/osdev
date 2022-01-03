@@ -1,7 +1,7 @@
 #include "isr.h"
 #include "string.h"
 #include "printf.h"
-
+#include "util.h"
 
 
 isr_handler_t isr_handlers[256];
@@ -12,7 +12,7 @@ void isr_handler(registers_t regs) {
         isr_handlers[regs.type](regs);
         return;
     }
-    kprintf("unhandled interrupt: %d", regs.type);
+    kprintf("unhandled interrupt: %d\n", regs.type);
 }
 
 void set_isr_handler(s32 num, isr_handler_t func) {
@@ -35,30 +35,30 @@ void init_interrupt_handlers() {
 
 
 void isr_div_error(registers_t regs) {
-    kprintf("INT: DIV error\n");
+    panic("INT: DIV error\n");
 }
 
 void isr_debug_exception(registers_t regs) {
-    kprintf("INT: Debug exception\n");
+    panic("INT: Debug exception\n");
 }
 
 void isr_nmi_interrupt(registers_t regs) {
-    kprintf("INT: NMI interrupt\n");
+    panic("INT: NMI interrupt\n");
 }
 
 void isr_breakpoint(registers_t regs) {
-    kprintf("INT: Breakpoint\n");
+    panic("INT: Breakpoint\n");
 }
 
 
 void isr_double_fault(registers_t regs) {
-    kprintf("INT: Double Fault. Oh fuck!\n");
+    panic("INT: Double Fault. Oh fuck!\n");
 }
 
 void isr_general_protection(registers_t regs) {
-    kprintf("INT: General Protection fault");
+    panic("INT: General Protection fault");
 }
 
 void isr_page_fault(registers_t regs) {
-    kprintf("INT: page fault :(\n");
+    panic("INT: page fault :(\n");
 }

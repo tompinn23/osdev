@@ -4,7 +4,7 @@
 #include <stivale2.h>
 #include <mm/phys_mem.h>
 
-#define MEMBLOCK_INIT_REGIONS 128
+#define MEMBLOCK_INIT_REGIONS 256
 
 struct memblock_region {
     uint64_t base;
@@ -33,6 +33,6 @@ void bootmem_add_reserved(uint64_t base, uint64_t length);
 void bootmem_add_usable(uint64_t base, uint64_t length);
 void bootmem_add(struct memblock_type* mem, uint64_t base, uint64_t length);
 
-uint64_t bootmem_alloc(int num);
+void* bootmem_alloc(int num);
 
 void bootmem_free_early(uint64_t base, uint64_t len);

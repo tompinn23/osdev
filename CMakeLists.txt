@@ -33,6 +33,7 @@ set(LIBK_SRC
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${CMAKE_SOURCE_DIR}/linker.ld")
 
 add_library(libk STATIC ${LIBK_SRC})
+set_target_properties(libk PROPERTIES PREFIX "")
 target_include_directories(libk PUBLIC include/libk include/kernel)
 
 add_executable(kernel.elf ${KERNEL_SRC})

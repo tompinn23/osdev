@@ -14,7 +14,7 @@
 	const typeof((align)) _align = (align); \
 	_val & ~(_align - 1); })
 
-void pmm_init(struct page* page_data);
+void pmm_init(struct page* page_data, struct stivale2_struct_tag_memmap* map);
 
 
 void* kmalloc(size_t size);

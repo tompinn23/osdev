@@ -12,9 +12,7 @@
 #define BYTES_PER_BUCKET 16
 
 #define ZONE_DMA_SZ 0x1000000
-#define ZONE_NORMAL_SZ 0x40000000 - ZONE_DMA_SZ
-
-
+#define ZONE_NORMAL_SZ 0x00000000ffffffff
 
 typedef uint64_t pfn_t;
 extern uint64_t _kernel_end_phys[];
@@ -40,7 +38,7 @@ struct free_area {
     pfn_t min_pfn;
     size_t len;
     struct list_node* free_lists[MAX_ORDER];
-    struct bitmap_t free_map[MAX_ORDER];
+    bitmap_t free_map[MAX_ORDER];
 };
 
 struct zone_area {

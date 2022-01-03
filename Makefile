@@ -6,14 +6,15 @@ NASM = nasm
 
 PWD = $(shell pwd)
 
-CFLAGS = -g -Wall -Wextra -O2 -pipe
+CFLAGS = -g -Wall -Wextra -O2 -pipe -DDEBUG_ALL
 NASMFLAGS = 
 LDFLAGS =
 
 # internal c flags that shouldn't be changed by the user.
-INTERNALCFLAGS :=        \
+INTERNALCFLAGS =        \
 	-I.                  \
-	-I$(PWD)/src         \
+	-I$(PWD)/include/kernel         \
+	-I$(PWD)/include/libk \
 	-std=gnu11           \
 	-ffreestanding       \
 	-fno-stack-protector \
@@ -26,20 +27,21 @@ INTERNALCFLAGS :=        \
 	-mno-red-zone
 
 # Internal linker flags that should not be changed by the user.
-INTERNALLDFLAGS :=             \
+INTERNALLDFLAGS =         \
 	-Tlinker.ld            \
 	-nostdlib              \
 	-zmax-page-size=0x1000 \
 	-static                \
 	-pie                   \
 	--no-dynamic-linker    \
+	--no-relax \
 	-ztext
 
-C_SRCS := $(wildcard src/*.c) $(wildcard src/klib/*.c) $(wildcard src/cpu/*.c) $(wildcard src/console/*.c) $(wildcard src/kernel/*.c) $(wildcard src/mm/*.c)
-AS_SRCS := src/cpu/idt.s src/cpu/interrupt.s
+C_SRCS := $(wildcard libk/*.c) $(wildcard kernel/*.c) $(wildcard kernel/cpu/*.c) $(wildcard kernel/mm/*.c) $(wildcard kernel/console/*.c)
+AS_SRCS := kernel/cpu/idt.s kernel/cpu/interrupt.s
 OBJS := $(C_SRCS:.c=.o) $(AS_SRCS:.s=.s.o)
 
-.PHONY: all clean print
+.PHONY: all clean print run
 
 all: $(KERNEL)
 
@@ -72,3 +74,8 @@ iso: $(KERNEL)
 clean:
 	rm -rf $(KERNEL) $(OBJS) iso_root image.iso
 
+run: iso
+	qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF.fd -boot d -cdrom image.iso -m 2048
+
+run-debug: iso
+	qemu-system-x86_64 -s -S -bios /usr/share/ovmf/x64/OVMF.fd -boot d -cdrom image.iso -m 2048 -d cpu_reset

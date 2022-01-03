@@ -7,3 +7,4 @@ limine-install
 build/
 .idea/*
 .vs/*
+.ccls-cache/
