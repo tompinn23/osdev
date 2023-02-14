@@ -1,0 +1,11 @@
+compile_commands.json
+.cache/
+iso_root/
+leek.elf
+leek.iso
+*.d
+*.o
+limine-deploy
+limne-enroll-config
+limine-version
+
