@@ -24,10 +24,11 @@ void vsprintf(char *str, void (*putchar)(char), const char *format,
 void vsprintf_helper(char *str, void (*putchar)(char), const char *format,
                      uint32_t *pos, va_list arg) {
   char c;
-  int sign, ival, sys;
+  int sign, sys;
   char buf[512];
   char width_str[10];
-  uint32_t uval;
+  uint64_t uval;
+  long ival;
   uint32_t size = 8;
   uint32_t i;
   int size_override = 0;
@@ -63,7 +64,7 @@ void vsprintf_helper(char *str, void (*putchar)(char), const char *format,
         else
           sys = 16;
 
-        uval = ival = va_arg(arg, int);
+        uval = ival = va_arg(arg, long);
         if (c == 'd' && ival < 0) {
           sign = 1;
           uval = -ival;

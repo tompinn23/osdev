@@ -5,10 +5,12 @@
 #include "limine.h"
 
 #include "acpi/rsdt.h"
-#include "cpu/idt.h"
+#include "cpu/gdt.h"
+#include "cpu/interrupts/idt.h"
 #include "fbcon.h"
 #include "libk/kutil.h"
 #include "log.h"
+#include "mm/init.h"
 
 static volatile struct limine_rsdp_request rsdp_rqst = {
     .id = LIMINE_RSDP_REQUEST,
@@ -17,6 +19,12 @@ static volatile struct limine_rsdp_request rsdp_rqst = {
 
 static volatile struct limine_framebuffer_request fb_rqst = {
     .id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0};
+
+static volatile struct limine_memmap_request mm_rqst = {
+    .id = LIMINE_MEMMAP_REQUEST, .revision = 0};
+
+static volatile struct limine_kernel_address_request kaddr_rqst = {
+    .id = LIMINE_KERNEL_ADDRESS_REQUEST, .revision = 0};
 
 static void done(void) {
   for (;;) {
@@ -30,20 +38,18 @@ void _start(void) {
   }
 
   initialize_fbcon(fb_rqst.response);
+  gdt_assemble();
+  init_idt();
+
+  mm_init(mm_rqst.response);
 
   dbg("acpi :: RSDP: %p\n", rsdp_rqst.response->address);
-  rsdp_descriptor_v1_t *rsdp = rsdp_rqst.response->address;
+  acpi_rsdp_v2_t *rsdp = (void *)(rsdp_rqst.response->address);
   kprintf("ACPI rev: %d\n", rsdp->revision);
-  done();
-  if (rsdp_is_v2(rsdp)) {
-    kprintf("ACPI ver: 2.0+\n");
-  } else {
-    kprintf("ACPI ver: 1.0\n");
-    acpi_header_t *rsdt = (void *)rsdp->rsdt;
-    acpi_header_t *madt = NULL;
-    if (sdt_checksum(rsdt)) {
-      madt = acpi_v1_find_table(rsdt, "APIC");
-    }
+  if (acpi_rsdp_checksum(rsdp)) {
+    dbg("acpi :: RSDP OK\n");
+    acpi_header_t *madt = acpi_find_table(rsdp, "APIC");
+    dbg("acpi :: MADT: 0x%p", madt);
   }
   done();
 }

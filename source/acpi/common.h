@@ -12,6 +12,6 @@ typedef struct acpi_header {
   uint32_t OEM_rev;
   uint32_t creator_id;
   uint32_t creator_rev;
-} acpi_header_t;
+} __attribute__((packed)) acpi_header_t;
 
 int sdt_checksum(acpi_header_t *table);
