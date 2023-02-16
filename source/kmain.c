@@ -41,8 +41,10 @@ void _start(void) {
   gdt_assemble();
   init_idt();
 
-  mm_init(mm_rqst.response);
-
+  mm_early_init(mm_rqst.response);
+  for (int i = 0; i < 20; i++) {
+    dbg("main :: page: 0x%p\n", mm_alloc_page());
+  }
   dbg("acpi :: RSDP: %p\n", rsdp_rqst.response->address);
   acpi_rsdp_v2_t *rsdp = (void *)(rsdp_rqst.response->address);
   kprintf("ACPI rev: %d\n", rsdp->revision);

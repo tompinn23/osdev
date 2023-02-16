@@ -10,10 +10,27 @@ static struct mm_info {
   // page_t* pages;
   uint64_t page_count;
   struct intrusive_list buddies;
+  int early;
 } mm_info;
 
-void mm_init(struct limine_memmap_response *mm) {
+void mm_early_init(struct limine_memmap_response *mm) {
   intrusive_list_init(&mm_info.buddies);
+  mm_info.early = 1;
+  for (int i = 0; i < mm->entry_count; i++) {
+    switch (mm->entries[i]->type) {
+    case LIMINE_MEMMAP_USABLE:
+      dbg("mm_early :: usable :: base 0x%p :: size 0x%p\n",
+          mm->entries[i]->base, mm->entries[i]->length);
+      buddy_t *early =
+          buddy_init(ZONE_LOWMEM, mm->entries[i]->base, mm->entries[i]->length);
+      intrusive_list_push(&mm_info.buddies, &early->buddies);
+      return;
+    }
+  }
+}
+
+void mm_init(struct limine_memmap_response *mm) {
+  mm_info.early = 0;
   for (int i = 0; i < mm->entry_count; i++) {
     switch (mm->entries[i]->type) {
     case LIMINE_MEMMAP_USABLE:
@@ -32,8 +49,12 @@ void mm_init(struct limine_memmap_response *mm) {
     }
   }
   dbg("mm :: page count %d\n", mm_info.page_count);
-  buddy_t *b = intrusive_list_container_of(mm_info.buddies.next, b, buddies);
-  void *ptr = buddy_alloc_page(b);
-  dbg("mm :: buddy 0 0x%p\n", b);
-  dbg("mm :: buddy 0 first alloc: 0x%p\n", ptr);
+}
+
+void *mm_alloc_page() {
+  if (mm_info.early) {
+    buddy_t *b = intrusive_list_container_of(mm_info.buddies.next, b, buddies);
+    return buddy_alloc_page(b);
+  }
+  return NULL;
 }

@@ -4,12 +4,19 @@
 
 #include <stddef.h>
 
+#define PAGE_FAULT_PRESENT 0x1
+#define PAGE_FAULT_WRITE 0x2
+#define PAGE_FAULT_USER 0x4
+
 void isr_exception_handler(isr_xframe_t *frame);
 
 typedef void (*exception_handler)(isr_xframe_t *);
 
 static void page_fault(isr_xframe_t *frame) {
+  kprintf("ACCESS VIOLATION: %s\n",
+          frame->base_frame.error_code & PAGE_FAULT_WRITE ? "WRITE" : "READ");
   kprintf("error: page fault: at 0x%p\n", frame->base_frame.rip);
+  kprintf("pf attempted access: 0x%p\n", frame->control_registers.cr2);
   kprintf("pf err: 0x%p\n", frame->base_frame.error_code);
   for (;;) {
     __asm__ volatile("cli; hlt");

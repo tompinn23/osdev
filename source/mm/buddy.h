@@ -5,7 +5,7 @@
 enum { ZONE_DMA, ZONE_LOWMEM, ZONE_HIGHMEM };
 
 #define BUDDY_MAX_LEVEL 8
-#define PAGE_SIZE 0x1000
+#define PAGE_SIZE 4096
 
 typedef struct list {
   struct list *next, *prev;
@@ -21,6 +21,7 @@ typedef struct buddy {
   /* Bitmaps from 4k to 512k */
   free_area_t free_area[BUDDY_MAX_LEVEL];
   void *base;
+  size_t reserved_pages;
   uint64_t length;
   int zone_type;
   void *prev, *next;
