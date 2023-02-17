@@ -2,12 +2,20 @@
 
 #include "libk/kutil.h"
 #include "log.h"
+#include <stdbool.h>
 #include <stddef.h>
 
 static inline void map_set(uint64_t *set, size_t i) {
   set[i >> 6] |= ((uint64_t)1) << (i % 64);
 }
-
+static inline bool map_get(uint64_t *set, size_t i) {
+  size_t shifted = i >> 6;
+  return (set[shifted] & (((uint64_t)1) << (i % 64))) != 0;
+}
+/*
+  flips bit at specified addr. uses btcq (x86 assembly)
+  //ASSEMBLY: x86
+*/
 static inline void __change_bit(long nr, volatile unsigned long *addr) {
   __asm__ volatile("btcq %1,%0"
                    :
@@ -143,11 +151,12 @@ void *buddy_split_block(buddy_t *buddy, int order, int requested_order) {
     // flip bit of (current order index) parent of the two new blocks.
     __change_bit(get_index_for_ptr(buddy, free, order),
                  buddy->free_area[order].map);
-    dbg("buddy :: splitting block of order: %d at: 0x%p buddy: 0x%p\n", order,
-        free, free_buddy);
+    // dbg("buddy :: splitting block of order: %d at: 0x%p buddy: 0x%p\n",
+    // order,
+    //    free, free_buddy);
     order--;
   } while (order != requested_order && order != 0);
-  dbg("buddy :: req_order: %d\n", requested_order);
+  // dbg("buddy :: req_order: %d\n", requested_order);
   list_t *free = list_pop(&buddy->free_area[requested_order].free_list);
   if (free != NULL) {
     __change_bit(get_index_for_ptr(buddy, free, requested_order),
@@ -177,4 +186,44 @@ void *buddy_alloc_page(buddy_t *buddy) {
     }
   }
   return NULL;
+}
+
+void buddy_free_page(buddy_t *b, void *page) { buddy_free_block(b, page, 0); }
+
+/*
+  Flip parent bit.
+  if becomes 0 coalecse.
+
+*/
+void buddy_free_block(buddy_t *buddy, void *addr, int order) {
+  size_t i = get_index_for_ptr(buddy, addr, order + 1);
+  void *buddy_addr = addr + ((1 << order)) * PAGE_SIZE;
+  /*
+     check to see if the potential buddy address calculates to the same
+     parent index in the bitmap. If it doesn't our buddy is lower in
+     memory rather than higher in memory.
+  */
+  if (get_index_for_ptr(buddy, buddy_addr, order + 1) != i) {
+    buddy_addr = addr - ((1 << order)) * PAGE_SIZE;
+  }
+  /*
+     if zero me and my buddy have both been freed.
+     coalesce.
+  */
+  if (map_get(buddy->free_area[order + 1].map, i) == 0) {
+    list_remove(addr);
+    list_remove(buddy_addr);
+    if (addr > buddy_addr) {
+      void *tmp = buddy_addr;
+      buddy_addr = addr;
+      addr = tmp;
+    }
+    dbg("buddy: coalescing two blocks of order: %d to %d", order, order + 1);
+    list_push(&buddy->free_area[order + 1].free_list, addr);
+    if (order < (BUDDY_MAX_LEVEL - 1)) {
+      buddy_free_block(buddy, addr, order + 1);
+    }
+  } else {
+    list_push(&buddy->free_area[order].free_list, addr);
+  }
 }

@@ -31,3 +31,5 @@ typedef struct buddy {
 
 buddy_t *buddy_init(int zone_ty, uint64_t base, uint64_t length);
 void *buddy_alloc_page(buddy_t *b);
+void buddy_free_page(buddy_t *b, void *page);
+void buddy_free_block(buddy_t *buddy, void *addr, int order);
