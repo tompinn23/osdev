@@ -42,6 +42,14 @@ void _start(void) {
   init_idt();
 
   mm_early_init(mm_rqst.response);
+  for (int i = 0; i < 5; i++) {
+    dbg("main :: page: 0x%p\n", mm_alloc_page());
+  }
+  void *ptr = (void *)0x41000;
+  for (int i = 0; i < 5; i++) {
+    mm_free_page(ptr);
+    ptr += 0x1000;
+  }
   for (int i = 0; i < 20; i++) {
     dbg("main :: page: 0x%p\n", mm_alloc_page());
   }

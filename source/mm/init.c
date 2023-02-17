@@ -58,3 +58,11 @@ void *mm_alloc_page() {
   }
   return NULL;
 }
+
+void mm_free_page(void *page) {
+  if (mm_info.early) {
+    buddy_t *b = intrusive_list_container_of(mm_info.buddies.next, b, buddies);
+    buddy_free_page(b, page);
+    return;
+  }
+}

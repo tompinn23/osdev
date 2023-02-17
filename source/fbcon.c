@@ -82,7 +82,7 @@ static void end_parsing() {
   console.reset_flags = 0;
 }
 
-static void fbcon_putc(char c) {
+static void fbcon_putc(char c, void (*putc)(uint32_t)) {
   switch (console.state) {
   case ESC:
     if (c == '\n') {
@@ -94,7 +94,7 @@ static void fbcon_putc(char c) {
       console.parsing = 1;
       console.state = BRACKET;
     } else {
-      ssfn_putc(c);
+      putc(c);
     }
     break;
   case BRACKET:
@@ -102,7 +102,7 @@ static void fbcon_putc(char c) {
       console.state = PARSE;
     } else {
       end_parsing();
-      ssfn_putc(c);
+      putc(c);
     }
     break;
   case PARSE:
