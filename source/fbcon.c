@@ -226,15 +226,17 @@ static void fbcon_putc(char c, void (*putc)(uint32_t)) {
   }
 }
 
+static void fbconc(char c) { fbcon_putc(c, ssfn_putc); }
+
 void kprintf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   uint32_t pos = 0;
-  vsprintf_helper(NULL, fbcon_putc, fmt, &pos, ap);
+  vsprintf_helper(NULL, fbconc, fmt, &pos, ap);
   va_end(ap);
 }
 
 void vkprintf(const char *fmt, va_list ap) {
   uint32_t pos = 0;
-  vsprintf_helper(NULL, fbcon_putc, fmt, &pos, ap);
+  vsprintf_helper(NULL, fbconc, fmt, &pos, ap);
 }
